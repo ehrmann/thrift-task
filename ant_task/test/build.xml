@@ -1,0 +1,14 @@
+<project name="TestThriftc" default="test" basedir=".">
+	<taskdef name="thriftc" classname="com.nsegment.thrift.ThriftcTask" classpath="../thriftc_task.jar" />
+
+	<target name="test">
+		<thriftc srcdir="." includes="**/*.thrift" destdir="." java="" php="" py="" rb="" perl=""/>
+	</target>
+
+	<target name="clean">
+		<delete verbose="true">
+			<fileset dir="." includes="gen-*/**/*"/>
+			<dirset dir="." includes="gen-*/**"/>
+		</delete>
+	</target>
+</project>
