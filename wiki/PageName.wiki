@@ -1,6 +1,6 @@
 = Thriftc Ant Task =
 
-Thriftc-task is an native(ish) cross-platform Ant task for the http://incubator.apache.org/thrift/ Apache Thrift] project.
+Thriftc-task is an native(ish) cross-platform Ant task for the http://incubator.apache.org/thrift/ Apache Thrift] project.  It also includes a full Java implementation of {{{thriftc}}} than can be used from the command line.
 
 == Usage ==
   # Put thriftc_task.jar into your project directory.
@@ -14,8 +14,19 @@ Thriftc-task is an native(ish) cross-platform Ant task for the http://incubator.
 }}}
   # This task will build all {{{.thrift}}} files in the project directory and drop off {{{.java}}} files in {{{bin/gen-java}}}
 
+To run {{{thriftc}}} directly (not from Ant), do
+{{{
+java -cp thriftc_task.jar com.nsegment.thrift.Thriftc --help
+}}}
+
+All files must be in the same directory tree that {{{java}}} was run in.  {{{/foo.thrift}}} _actually_ means {{{./foo.thrift}}}.
+
 == Usage details ==
 Thriftc-task is a [http://www.jajakarta.org/ant/ant-1.6.1/docs/en/manual/api/org/apache/tools/ant/taskdefs/MatchingTask.html MatchingTask], so it supports filesets, includes, and excludes like {{{ <javac/> }}}.
+
+Gen flags are passed as 
+
+
 
 == Implementation details ==
 Rather than being a native Java implementation, Thriftc-task uses code translates from a MIPS build of {{{thriftc}}} to Java byte code by the [http://nestedvm.ibex.org/ NestedVM project] and a modified Unix runtime.  It's essentially emulated MIPS code, but in a compiled form.  While it's noticeably slower than a native executable or native Java code, it's far easier to perfectly match existing behavior or change behavior to match a specific build.
