@@ -1,6 +1,6 @@
 = Thriftc Ant Task =
 
-Thriftc-task is an native(ish) cross-platform Ant task for the Apache Thrift projects.
+Thriftc-task is an native(ish) cross-platform Ant task for the http://incubator.apache.org/thrift/ Apache Thrift] project.
 
 == Usage ==
   # Put thriftc_task.jar into your project directory.
@@ -16,9 +16,20 @@ Thriftc-task is an native(ish) cross-platform Ant task for the Apache Thrift pro
 
 == Usage details ==
 ThriftcTask is a [http://www.jajakarta.org/ant/ant-1.6.1/docs/en/manual/api/org/apache/tools/ant/taskdefs/MatchingTask.html MatchingTask], so it supports filesets, includes, and excludes like {{{ <javac/> }}}.
+
 == Implementation details ==
+Rather than being a native Java implementation, Thriftc-task uses code translates from a MIPS build of {{{thriftc}}} to Java byte code by the [http://nestedvm.ibex.org/ NestedVM project] and a modified Unix runtime.  It's essentially emulated MIPS code, but in a compiled form.  While it's noticeably slower than a native executable or native Java code, it's far easier to perfectly match existing behavior or change behavior to match a specific build.
+
+The build process has several phases:
+  # Build NestedVM with C++ support
+  # Check out Apache Thrift source.
+  # Make miscellaneous changes to NestedVM headers
+  # Use a custom makefile (yes, make.  Oh, the irony) to cross-compile {{{thriftc}}} into a statically-linked MIPS executable.
+  # Use NestedVM to generate a {{{.java}}} class file.
+  # Drop it off in the thriftc-task project and build!
 
 == Limitations ==
   * The source and destination directors must be somewhere within the project root directory.  Doing {{{srcdir="../"}}} will cause a build exception.
     * This is a side effect of supporting Windows.  The original {{{thriftc}}} code makes some assumptions that it's running under either Cygwin or *nix, so the runtime environment translates calls.  Windows effectively has multiple roots ({{{c:\, d:\}}}, and handling that would have been a pain, so all directories are rooted in the project directory.
   * It's a little slow, but tolerable.  This is because the code is emulated.
+  * It doesn't detect if source files need to be rebuilt, so it always rebuilds.  Part of the reason is detecting modification times requires parsing the file to find its includes.
