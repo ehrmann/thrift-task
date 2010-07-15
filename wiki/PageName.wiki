@@ -1,0 +1,18 @@
+= Thriftc Ant Task =
+
+Thriftc-task is an native(ish) cross-platform Ant task for the Apache Thrift projects.
+
+== Usage ==
+  # Put thriftc_task.jar into your project directory.
+  # Define the task in your build file, setting classpath to the relative path to the jar:
+{{{
+<taskdef name="thriftc" classname="com.nsegment.thrift.ThriftcTask" classpath="thriftc_task_optimized.jar"/>
+}}}
+  # Now add a task to your build file:
+{{{
+<thriftc srcdir="." includes="**/*.thrift" destdir="bin" java=""/>
+}}}
+  # This task will build all {{{.thrift}}} files in the project directory and drop off {{{.java}}} files in {{{bin/gen-java}}}
+
+== Limitations ==
+  * The source and destination directors must be somewhere within the project root directory.  Doing {{{srcdir="../"}}} will cause a build exception.
