@@ -14,5 +14,11 @@ Thriftc-task is an native(ish) cross-platform Ant task for the Apache Thrift pro
 }}}
   # This task will build all {{{.thrift}}} files in the project directory and drop off {{{.java}}} files in {{{bin/gen-java}}}
 
+== Usage details ==
+ThriftcTask is a [http://www.jajakarta.org/ant/ant-1.6.1/docs/en/manual/api/org/apache/tools/ant/taskdefs/MatchingTask.html MatchingTask], so it supports filesets, includes, and excludes like {{{ <javac/> }}}.
+== Implementation details ==
+
 == Limitations ==
   * The source and destination directors must be somewhere within the project root directory.  Doing {{{srcdir="../"}}} will cause a build exception.
+    * This is a side effect of supporting Windows.  The original {{{thriftc}}} code makes some assumptions that it's running under either Cygwin or *nix, so the runtime environment translates calls.  Windows effectively has multiple roots ({{{c:\, d:\}}}, and handling that would have been a pain, so all directories are rooted in the project directory.
+  * It's a little slow, but tolerable.  This is because the code is emulated.
