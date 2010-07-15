@@ -1,6 +1,6 @@
 = Thriftc Ant Task =
 
-Thriftc-task is an native(ish) cross-platform Ant task for the http://incubator.apache.org/thrift/ Apache Thrift] project.  It also includes a full Java implementation of {{{thriftc}}} than can be used from the command line.
+Thriftc-task is an native(ish) cross-platform Ant task for the [http://incubator.apache.org/thrift/ Apache Thrift] project.  It also includes a full Java implementation of {{{thriftc}}} than can be used from the command line.
 
 == Usage ==
   # Put thriftc_task.jar into your project directory.
