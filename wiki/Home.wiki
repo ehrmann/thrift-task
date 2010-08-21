@@ -58,7 +58,7 @@ The following languages and options are supported:
   * xsd
 
 == Implementation details ==
-Rather than being a native Java implementation, Thriftc-task uses code translates from a MIPS build of {{{thriftc}}} to Java byte code by the [http://nestedvm.ibex.org/ NestedVM project] and a modified Unix runtime.  It's essentially emulated MIPS code, but in a compiled form.  While it's noticeably slower than a native executable or native Java code, it's far easier to perfectly match existing behavior or change behavior to match a specific build.
+Rather than being a native Java implementation, Thriftc-task uses code translated from a MIPS build of {{{thriftc}}} to Java byte code by the [http://nestedvm.ibex.org/ NestedVM project] and a modified Unix runtime.  It's essentially emulated MIPS code, but in a compiled form.  While it's noticeably slower than a native executable or native Java code, it's far easier to perfectly match existing behavior or change behavior to match a specific build.
 
 The build process has several phases:
   # Build NestedVM with C++ support
