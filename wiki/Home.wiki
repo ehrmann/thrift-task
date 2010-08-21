@@ -70,6 +70,6 @@ The build process has several phases:
 
 == Limitations ==
   * The source and destination directors must be somewhere within the project root directory.  Doing {{{srcdir="../"}}} will cause a build exception.
-    * This is a side effect of supporting Windows.  The original {{{thriftc}}} code makes some assumptions that it's running under either Cygwin or **nix, so the runtime environment translates calls.  Windows effectively has multiple roots ({{{ c:\, d:\ }}}, and handling that would have been a pain, so all directories are rooted in the project directory.
+    * This is a side effect of supporting Windows.  The original {{{thriftc}}} code makes some assumptions that it's running under either Cygwin or **nix, so the runtime environment translates calls.  Windows effectively has multiple roots ({{{ c:\, d:\}}}), and handling that would have been a pain, so all directories are rooted in the project directory.
   * It's a little slow, but tolerable.  This is because the code is emulated.
   * It doesn't detect if source files need to be rebuilt, so it always rebuilds.  Part of the reason is detecting modification times requires parsing the file to find its includes.
