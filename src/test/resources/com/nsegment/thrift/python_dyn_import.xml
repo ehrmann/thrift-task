@@ -1,0 +1,7 @@
+<project name="TestThrift" default="build">
+    <taskdef name="thrift" classname="com.nsegment.thrift.ThriftTask" />
+
+    <target name="build">
+        <thrift srcdir="." includes="**/*.thrift" destdir="." py="dynamic,dynimport=from foo.bar import DynBase,dynbase=DynBase" /> <!--dynimport='from foo.bar import DynBase',dynbase=DynBase-->
+    </target>
+</project>

@@ -1,0 +1,7 @@
+<project name="TestThrift" default="build">
+    <taskdef name="thrift" classname="com.nsegment.thrift.ThriftTask" />
+
+    <target name="build">
+        <thrift includePath="../thrift" srcdir="../thrift" includes="**/*.thrift" destdir="../artifacts" java="" />
+    </target>
+</project>
