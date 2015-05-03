@@ -16,6 +16,8 @@ Thriftc-task is an native(ish) cross-platform Ant task for the [Apache Thrift](h
 
 To run `thriftc` as a standalone process (not from Ant), do
 ```
+java -jar thriftc_task.jar -help
+# or
 java -cp thriftc_task.jar com.nsegment.thrift.Thriftc --help
 ```
 

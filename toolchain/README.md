@@ -16,7 +16,7 @@ On a Linux machine with `debootstrap` installed, do
             -outfile "${THRIFTC_PATH}/Thriftc.class" \
             com.nsegment.thrift.Thriftc \
             thriftc-build-jail/usr/src/thriftc/build/thrift
-    jar cvf ../repo/thriftc-executable-0.0.2.jar -C "${THRIFTC_TMP}" .
+    jar cvf ../repo/com/nsegment/thrift/thriftc-executable/0.0.2/thriftc-executable-0.0.2.jar -C "${THRIFTC_TMP}" .
 
     # Copy the nestedvm Unix runtime into the project repo
-    cp thriftc-build-jail/usr/src/nestedvm/unix_runtime.jar ../repo/nestedvm-unix-runtime-0.0.2.jar
+    cp thriftc-build-jail/usr/src/nestedvm/unix_runtime.jar ../repo/org/ibex/nestedvm/nestedvm-unix-runtime/0.0.2/nestedvm-unix-runtime-0.0.2.jar

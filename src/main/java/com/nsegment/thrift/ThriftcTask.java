@@ -1,5 +1,4 @@
 package com.nsegment.thrift;
-import com.nsegment.thrift.Thriftc;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+import org.ibex.nestedvm.Runtime;
 
 
 public class ThriftcTask extends MatchingTask {
@@ -33,32 +33,47 @@ public class ThriftcTask extends MatchingTask {
 	
 	// Options are verified linearly, so switch that code to use a map if these arrays
 	// get too big.
+    // TODO: Really; this needs to be more programmatic
 	protected static final String[] AS3_OPTIONS = { "bindable" };
-	protected static final String[] COCOA_OPTIONS = { "log_unexpected" };
-	protected static final String[] CPP_OPTIONS = { "dense", "include_prefix" };
-	protected static final String[] CSHARP_OPTIONS = {};
-	protected static final String[] ERL_OPTIONS = {};
-	protected static final String[] HS_OPTIONS = {};
-	protected static final String[] HTML_OPTIONS = {};
-	protected static final String[] JAVA_OPTIONS = { "beans", "private-members", "nocamel", "hashcode" };
-	protected static final String[] JS_OPTIONS = {};
+    protected static final String[] C_GLIB = {};
+	protected static final String[] COCOA_OPTIONS = { "log_unexpected", "validate_required" };
+	protected static final String[] CPP_OPTIONS = { "cob_style", "no_client_completion", "no_default_operators", "templates", "pure_enums", "dense", "include_prefix", };
+	protected static final String[] CSHARP_OPTIONS = { "async", "asyncctp", "wcf", "serial", "nullable", "hashcode", "union", };
+    protected static final String[] D_OPTIONS = {};
+    protected static final String[] DELPHI_OPTIONS = { "ansistr_binary", "register_types", "constprefix", "events", "xmldoc", };
+	protected static final String[] ERL_OPTIONS = { "legacynames", };
+    protected static final String[] GO_OPTIONS = { "package_prefix", "thrift_import", "package", };
+    protected static final String[] HS_OPTIONS = {};
+	protected static final String[] HTML_OPTIONS = { "standalone", };
+	protected static final String[] JAVA_OPTIONS = { "beans", "private-members", "nocamel", "fullcamel", "android", "android_legacy", "java5", "reuse-objects", "sorted_containers", };
+    protected static final String[] JAVAME_OPTIONS = {};
+	protected static final String[] JS_OPTIONS = { "jquery", "node", "ts", };
+    protected static final String[] JSON_OPTIONS = {};
+    protected static final String[] LUA_OPTIONS = {};
 	protected static final String[] OCAML_OPTIONS = {};
 	protected static final String[] PERL_OPTIONS = {};
-	protected static final String[] PHP_OPTIONS = { "inlined", "server", "autoload", "oop", "rest" };
-	protected static final String[] PY_OPTIONS = { "new_style", "twisted" };
-	protected static final String[] RB_OPTIONS = {};
+	protected static final String[] PHP_OPTIONS = { "inlined", "server", "oop", "rest", "nsglobal", "validate", "json", };
+	protected static final String[] PY_OPTIONS = { "new_style", "twisted", "tornado", "utf8strings", "slots", "dynamic", "dynbase", "dynexc", "dynimport", };
+	protected static final String[] RB_OPTIONS = { "rubygems", "namespaced", };
 	protected static final String[] ST_OPTIONS = {};
 	protected static final String[] XSD_OPTIONS= {};
 	
 	protected String genAs3 = null;
+    protected String genCGlib = null;
 	protected String genCocoa = null;
 	protected String genCpp = null;
 	protected String genCsharp = null;
+    protected String genD = null;
+    protected String genDelphi = null;
 	protected String genErl = null;
+    protected String genGo;
 	protected String genHs = null;
 	protected String genHtml = null;
 	protected String genJava = null;
+    protected String genJavame = null;
 	protected String genJs = null;
+    protected String genJson = null;
+    protected String genLua = null;
 	protected String genOcaml = null;
 	protected String genPerl = null;
 	protected String genPhp = null;
@@ -104,12 +119,12 @@ public class ThriftcTask extends MatchingTask {
 		
 		// Output directory
 		if (destDir != null) {
-			if (destDir.isDirectory() == false) {
+			if (!destDir.isDirectory()) {
 				throw new BuildException("destDir '" + destDir.getPath() + "' not found.");
 			}
 			
 			String destDir = getChrootedPath(this.destDir);
-			if ("/".equals(destDir) == false) {
+			if (!"/".equals(destDir)) {
 				parameters.add("-o");
 				parameters.add(destDir);
 			}
@@ -123,6 +138,10 @@ public class ThriftcTask extends MatchingTask {
 			parameters.add("--gen");
 			parameters.add(genAs3);
 		}
+        if (genCGlib != null) {
+            parameters.add("--gen");
+            parameters.add(genCGlib);
+        }
 		if (genCocoa != null) {
 			parameters.add("--gen");
 			parameters.add(genCocoa);
@@ -135,6 +154,14 @@ public class ThriftcTask extends MatchingTask {
 			parameters.add("--gen");
 			parameters.add(genCsharp);
 		}
+        if (genD != null) {
+            parameters.add("--gen");
+            parameters.add(genD);
+        }
+        if (genDelphi != null) {
+            parameters.add("--gen");
+            parameters.add(genDelphi);
+        }
 		if (genErl != null) {
 			parameters.add("--gen");
 			parameters.add(genErl);
@@ -151,10 +178,22 @@ public class ThriftcTask extends MatchingTask {
 			parameters.add("--gen");
 			parameters.add(genJava);
 		}
+        if (genJavame != null) {
+            parameters.add("--gen");
+            parameters.add(genJavame);
+        }
 		if (genJs != null) {
 			parameters.add("--gen");
 			parameters.add(genJs);
 		}
+        if (genJson != null) {
+            parameters.add("--gen");
+            parameters.add(genJson);
+        }
+        if (genLua != null) {
+            parameters.add("--gen");
+            parameters.add(genLua);
+        }
 		if (genOcaml != null) {
 			parameters.add("--gen");
 			parameters.add(genOcaml);
@@ -191,7 +230,7 @@ public class ThriftcTask extends MatchingTask {
 
 		// Add file placeholder
 		parameters.add("");
-		String[] parameterArray = parameters.toArray(new String[] {});
+		String[] parameterArray = parameters.toArray(new String[parameters.size()]);
 		
 		ArrayList<String> filesToProcess = new ArrayList<String>();
 		
@@ -202,7 +241,7 @@ public class ThriftcTask extends MatchingTask {
 		String[] srcDirs = src.list();
 		for (String srcDir : srcDirs) {
 			File srcDirFile = getProject().resolveFile(srcDir);
-			if (srcDirFile.exists() == false) {
+			if (!srcDirFile.exists()) {
 				throw new BuildException("srcdir '" + srcDir + "' does not exist.");
 			}
 
@@ -222,7 +261,7 @@ public class ThriftcTask extends MatchingTask {
 		for (String file : filesToProcess) {
 			parameterArray[parameterArray.length - 1] = file;
 			
-			if (this.quiet == false) {
+			if (!this.quiet) {
 				System.out.print("thriftc");
 				for (String param : parameterArray) {
 					System.out.print(" " + param);
@@ -233,8 +272,15 @@ public class ThriftcTask extends MatchingTask {
 			Thriftc thriftc = new Thriftc();
 			
 			if (quiet) {
-				thriftc.stderr = new NullOutputStream();
-				thriftc.stdout = new NullOutputStream();
+                int fd;
+                fd = thriftc.addFD(new Runtime.InputOutputStreamFD(NullOutputStream.NULL_OUTPUT_STREAM));
+                if (thriftc.sys_dup2(fd, 1) < 0) {
+                    throw new BuildException(("Failed to redirect stdout"));
+                }
+                fd = thriftc.addFD(new Runtime.InputOutputStreamFD(NullOutputStream.NULL_OUTPUT_STREAM));
+                if (thriftc.sys_dup2(fd, 2) < 0) {
+                    throw new BuildException(("Failed to redirect stderr"));
+                }
 			}
 			
 			int status = thriftc.run("thriftc", parameterArray);
@@ -296,6 +342,14 @@ public class ThriftcTask extends MatchingTask {
 		}
 	}
 
+    public void setC_glib(String cGlib) {
+        if (cGlib != null) {
+            this.genCGlib = "c_glib" + generateOptionString(parseGeneratorOptions(cGlib, C_GLIB));
+        } else {
+            this.genCGlib = null;
+        }
+    }
+
 	public void setCocoa(String cocoa) {
 		if (cocoa != null) {
 			this.genCocoa = "cocoa" + generateOptionString(parseGeneratorOptions(cocoa, COCOA_OPTIONS));
@@ -320,6 +374,22 @@ public class ThriftcTask extends MatchingTask {
 		}
 	}
 
+    public void setD(String d) {
+        if (d != null) {
+            this.genD = "d" + generateOptionString(parseGeneratorOptions(d, D_OPTIONS));
+        } else {
+            this.genD = null;
+        }
+    }
+
+    public void setDelphi(String delphi) {
+        if (delphi != null) {
+            this.genDelphi = "delphi" + generateOptionString(parseGeneratorOptions(delphi, DELPHI_OPTIONS));
+        } else {
+            this.genDelphi = null;
+        }
+    }
+
 	public void setErl(String erl) {
 		if (erl != null) {
 			this.genErl = "erl" + generateOptionString(parseGeneratorOptions(erl, ERL_OPTIONS));
@@ -327,6 +397,14 @@ public class ThriftcTask extends MatchingTask {
 			this.genErl = null;
 		}
 	}
+
+    public void setGo(String go) {
+        if (go != null) {
+            this.genGo = "go" + generateOptionString(parseGeneratorOptions(go, GO_OPTIONS));
+        } else {
+            this.genGo = null;
+        }
+    }
 
 	public void setHs(String hs) {
 		if (hs != null) {
@@ -352,6 +430,14 @@ public class ThriftcTask extends MatchingTask {
 		}
 	}
 
+    public void setJavame(String javame) {
+        if (javame != null) {
+            this.genJavame = "javame" + generateOptionString(parseGeneratorOptions(javame, JAVAME_OPTIONS));
+        } else {
+            this.genJavame = null;
+        }
+    }
+
 	public void setJs(String js) {
 		if (js != null) {
 			this.genJs = "js" + generateOptionString(parseGeneratorOptions(js, JS_OPTIONS));
@@ -359,6 +445,22 @@ public class ThriftcTask extends MatchingTask {
 			this.genJs = null;
 		}
 	}
+
+    public void setJson(String json) {
+        if (json != null) {
+            this.genJson = "json" + generateOptionString(parseGeneratorOptions(json, JSON_OPTIONS));
+        } else {
+            this.genJson = null;
+        }
+    }
+
+    public void setLua(String lua) {
+        if (lua != null) {
+            this.genLua = "lua" + generateOptionString(parseGeneratorOptions(lua, LUA_OPTIONS));
+        } else {
+            this.genLua = null;
+        }
+    }
 
 	public void setOcaml(String ocaml) {
 		if (ocaml != null) {
@@ -452,11 +554,7 @@ public class ThriftcTask extends MatchingTask {
 		
 		return resultSet;
 	}
-	
-	protected String getChrootedPath(String path) {
-		return getChrootedPath(new File(path));
-	}
-	
+
 	protected String getChrootedPath(File path) {
 		String baseDir;
 		try {
@@ -471,14 +569,15 @@ public class ThriftcTask extends MatchingTask {
 		} catch (IOException e) {
 			throw new BuildException("Failed to resolve path '" + path + "'");
 		}
-		
-		if (destDir.startsWith(baseDir) == false) {
+
+        // FIXME: This is no longer true
+		if (!destDir.startsWith(baseDir)) {
 			throw new BuildException("directory '" + path + "' should be in the same path as the base directory (for now).");
 		}
 		
 		destDir = destDir.substring(baseDir.length());
 		destDir = destDir.replace(File.separatorChar, '/');
-		if (destDir.length() != 0 && "/".equals(destDir) == false) {
+		if (destDir.length() != 0 && !"/".equals(destDir)) {
 			if (destDir.charAt(0) != '/') {
 				destDir = "/" + destDir;
 			}

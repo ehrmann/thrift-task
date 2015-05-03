@@ -15,21 +15,7 @@
 		<jar destfile="thriftc_task.jar" basedir="bin" includes="**/*.class"/>
 	</target>
 
-	<target name="optimized" depends="thriftc_task">
-		<java fork="true" maxmemory="768m"
-			jar="dist/soot-2.4.0.jar"
-		>	
-			<classpath>
-				<pathelement location="dist/jasminclasses-2.3.0.jar"/>
-			</classpath>
-			<arg value="-cp"/>
-			<arg value="bin:dist/rt.jar:lib/ant.jar"/>
-			<arg value="-process-dir"/>
-			<arg value="bin"/>
-			<arg value="-d"/>
-			<arg value="bin_optimized"/>
-		</java>
-	</target>
+
 
 	<target name="clean">
 		<delete>
