@@ -20,3 +20,7 @@ On a Linux machine with `debootstrap` installed, do
 
     # Copy the nestedvm Unix runtime into the project repo
     cp thriftc-build-jail/usr/src/nestedvm/unix_runtime.jar ../repo/org/ibex/nestedvm/nestedvm-unix-runtime/0.0.2/nestedvm-unix-runtime-0.0.2.jar
+
+    # To improve performance...
+    java -jar lib/proguard.jar -target 6 -dontobfuscate -injars thriftc-executable-0.0.2.jar  -outjars foo2.jar -dontwarn -keep 'public class com.nsegment.thrift.Thriftc { public static void main(java.lang.String[]); }' -dontshrink -dontoptimize
+    # There's also an optimization where thriftc is built to support only one platform

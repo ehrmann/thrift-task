@@ -1,0 +1,7 @@
+<project name="TestThriftc" default="build">
+	<taskdef name="thriftc" classname="com.nsegment.thrift.ThriftcTask" />
+
+	<target name="build">
+		<thriftc srcdir="." includes="**/*.thrift" destdir="." GENERATOR=""/>
+	</target>
+</project>
