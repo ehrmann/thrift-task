@@ -74,3 +74,4 @@ The process for building the emulated class blob is documented in [toolchain](to
 ## Limitations ##
 * It's a little slow, but tolerable.  This is because the code is emulated.
 * It doesn't detect if source files need to be rebuilt, so it always rebuilds.  Part of the reason is detecting modification times requires parsing the file to find its includes.
+* 0.9.2 hasn't been tested on Windows, yet.
