@@ -120,6 +120,9 @@ public class ThriftTask extends MatchingTask {
                 }
 
                 File file = ((FileResource)resource).getFile();
+                if (!file.isDirectory()) {
+                    throw new BuildException("includePath element '" + resource.getName() + "' isn't a directory");
+                }
 
                 try {
                     parameters.add("-I");
