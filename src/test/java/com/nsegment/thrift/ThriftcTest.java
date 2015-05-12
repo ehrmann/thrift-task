@@ -47,12 +47,31 @@ public class ThriftcTest {
                 this.getClass().getResourceAsStream("struct.thrift"),
                 new File(folder.getRoot(), "struct.thrift"));
 
-        String[] args = {
+        String outputDir = folder.getRoot().getCanonicalPath().replace(File.separatorChar, '/');
+        String src = folder.getRoot().getCanonicalPath().replace(File.separatorChar, '/') + "/struct.thrift";
+
+        String os = System.getProperty("os.name");
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            if (outputDir.matches("^[A-Za-z]:.*")) {
+                outputDir = new StringBuilder(outputDir)
+                        .replace(0, 1, outputDir.substring(0, 1).toLowerCase())
+                        .insert(0, "/")
+                        .toString();
+            }
+            if (src.matches("^[A-Za-z]:.*")) {
+                src = new StringBuilder(src)
+                        .replace(0, 1, src.substring(0, 1).toLowerCase())
+                        .insert(0, "/")
+                        .toString();
+            }
+        }
+
+        String[] args = new String [] {
                 "-o",
-                folder.getRoot().getCanonicalPath().replace(File.separatorChar, '/'),
+                outputDir,
                 "--gen",
                 "js",
-                folder.getRoot().getCanonicalPath().replace(File.separatorChar, '/') + "/struct.thrift",
+                src,
         };
 
         Thriftc thrift = new Thriftc();

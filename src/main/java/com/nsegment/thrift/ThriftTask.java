@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ThriftTask extends MatchingTask {
@@ -85,6 +87,35 @@ public class ThriftTask extends MatchingTask {
     protected Path includePath = null;
     protected File destDir = null;
 
+    protected final PathMapper<String, String> pathMapper;
+
+    public ThriftTask() {
+        String os = System.getProperty("os.name");
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            /*
+               This mapper does three things:
+               * Replaces '\' with '/'
+               * Prepends a '/' to absolute paths to make nestedvm happy
+               * make the drive name lower case (see UnixRuntime.java:1383)
+            */
+            this.pathMapper = new PathMapper<String, String>() {
+                private final Pattern DRIVE_PATTERN = Pattern.compile("^([a-zA-Z])(:.*)$");
+                public String map(String path) {
+                    path = path.replace(File.separatorChar, '/');
+
+                    Matcher matcher = DRIVE_PATTERN.matcher(path);
+                    if (matcher.matches()) {
+                        path = "/" + matcher.group(1).toLowerCase() + matcher.group(2);
+                    }
+
+                    return path;
+                }
+            };
+        } else {
+            this.pathMapper = identityMapper(String.class);
+        }
+    }
+
     @Override
     public void execute() throws BuildException {
         ArrayList<String> parameters = new ArrayList<String>();
@@ -126,7 +157,8 @@ public class ThriftTask extends MatchingTask {
 
                 try {
                     parameters.add("-I");
-                    parameters.add(file.getCanonicalPath().replace(File.separatorChar, '/'));
+                    String include = this.pathMapper.map(file.getCanonicalPath());
+                    parameters.add(include);
                 } catch (IOException e) {
                     throw new BuildException("Error resolving path element '" + resource.getName() + "'", e);
                 }
@@ -149,7 +181,7 @@ public class ThriftTask extends MatchingTask {
             }
 
             try {
-                String destDir = this.destDir.getCanonicalPath().replace(File.separatorChar, '/');
+                String destDir = this.pathMapper.map((this.destDir.getCanonicalPath()));
                 parameters.add("-o");
                 parameters.add(destDir);
             } catch (IOException e) {
@@ -157,8 +189,10 @@ public class ThriftTask extends MatchingTask {
             }
         } else {
             try {
+
+                String outputDir = this.pathMapper.map(this.getProject().getBaseDir().getCanonicalPath());
                 parameters.add("-o");
-                parameters.add(this.getProject().getBaseDir().getCanonicalPath().replace(File.separatorChar, '/'));
+                parameters.add(outputDir);
             } catch (IOException e) {
                 throw new BuildException("Error accessing destDir '" + this.getProject().getBaseDir() + "'", e);
             }
@@ -284,15 +318,16 @@ public class ThriftTask extends MatchingTask {
 
             String resolvedSrcDir;
             try {
-                resolvedSrcDir = srcDirFile.getCanonicalPath().replace(File.separatorChar, '/');
+                resolvedSrcDir = this.pathMapper.map(srcDirFile.getCanonicalPath());
             } catch (IOException e) {
                 throw new BuildException("Failed to resolve source directory '" + srcDir + "'", e);
             }
 
+            // FIXME: what are strings retunred by getIncludedFile absolute?
             DirectoryScanner ds = this.getDirectoryScanner(srcDirFile);
             String[] files = ds.getIncludedFiles();
             for (String file : files) {
-                file = file.replace(File.separatorChar, '/');
+                file = this.pathMapper.map(file);
                 filesToProcess.add((resolvedSrcDir + "/" + file).replaceAll("/+", "/"));
             }
         }
@@ -633,5 +668,17 @@ public class ThriftTask extends MatchingTask {
         @Override
         public void write(byte[] b) throws IOException {
         }
+    }
+
+    protected interface PathMapper <D, S> {
+        D map(S value);
+    }
+
+    protected static <I> PathMapper<I, I> identityMapper(Class<I> clazz) {
+        return new PathMapper<I, I>() {
+            public I map(I value) {
+                return value;
+            }
+        };
     }
 }

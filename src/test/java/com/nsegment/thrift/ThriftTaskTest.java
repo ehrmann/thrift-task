@@ -57,7 +57,7 @@ public class ThriftTaskTest {
         for (File file : FileUtils.listFiles(folder.getRoot(), null, true)) {
             String fileStr = file.getCanonicalPath();
             assertTrue(fileStr.startsWith(prefix));
-            fileSet.add(fileStr.substring(prefix.length()));
+            fileSet.add(fileStr.substring(prefix.length()).replace(File.separatorChar, '/'));
         }
 
         assertEquals(new TreeSet<String>(Arrays.asList(new String[]{
@@ -158,7 +158,7 @@ public class ThriftTaskTest {
         for (File file : FileUtils.listFiles(artifacts, null, true)) {
             String fileStr = file.getCanonicalPath();
             assertTrue(fileStr.startsWith(prefix));
-            fileSet.add(fileStr.substring(prefix.length()));
+            fileSet.add(fileStr.substring(prefix.length()).replace(File.separatorChar, '/'));
         }
 
         assertEquals(new TreeSet<String>(Arrays.asList(new String[]{
@@ -201,7 +201,7 @@ public class ThriftTaskTest {
         for (File file : FileUtils.listFiles(artifacts, null, true)) {
             String fileStr = file.getCanonicalPath();
             assertTrue(fileStr.startsWith(prefix));
-            fileSet.add(fileStr.substring(prefix.length()));
+            fileSet.add(fileStr.substring(prefix.length()).replace(File.separatorChar, '/'));
         }
 
         assertEquals(new TreeSet<String>(Arrays.asList(new String[]{
@@ -240,7 +240,7 @@ public class ThriftTaskTest {
         for (File file : FileUtils.listFiles(this.folder.getRoot(), null, true)) {
             String fileStr = file.getCanonicalPath();
             assertTrue(fileStr.startsWith(prefix));
-            fileSet.add(fileStr.substring(prefix.length()));
+            fileSet.add(fileStr.substring(prefix.length()).replace(File.separatorChar, '/'));
         }
 
         assertEquals(new TreeSet<String>(Arrays.asList(new String[]{
